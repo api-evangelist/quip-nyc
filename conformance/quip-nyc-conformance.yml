@@ -1,0 +1,187 @@
+generated: '2026-08-26'
+method: probed
+source:
+- https://www.getquip.com/.well-known/ucp
+- https://www.getquip.com/.well-known/openid-configuration
+- https://www.getquip.com/.well-known/oauth-authorization-server
+- https://www.getquip.com/.well-known/oauth-protected-resource
+- https://www.getquip.com/api/ucp/mcp
+- https://www.getquip.com/api/2026-07/graphql.json
+- https://www.getquip.com/llms.txt
+- https://www.getquip.com/products/green-refresh-bag
+domain_standard:
+  market: retail / direct-to-consumer e-commerce
+  standards_declared_in_contract:
+  - id: ucp-shopping
+    name: Universal Commerce Protocol — dev.ucp.shopping
+    version: '2026-04-08'
+    declared_at: https://www.getquip.com/.well-known/ucp
+    signature: >-
+      The merchant profile declares service key "dev.ucp.shopping" with transport "mcp",
+      and capability keys dev.ucp.shopping.checkout, .fulfillment, .discount, .cart, .order,
+      .catalog.search and .catalog.lookup, each carrying the ucp.dev spec and JSON Schema
+      URL for that capability.
+    why_it_matters: >-
+      An agent that already speaks UCP transacts against quip with no bespoke connector.
+      The declaration is in the machine-readable contract, not on a marketing page.
+  - id: schema-org-product
+    name: schema.org Product / Offer
+    declared_at: https://www.getquip.com/products/{handle}
+    signature: >-
+      Every product page embeds an application/ld+json block with "@context":
+      "http://schema.org/", "@type": "Product", and sku, gtin12, brand, offers[] (@type
+      Offer with price, priceCurrency, availability as a schema.org enum URI) and
+      aggregateRating. Saved verbatim to json-ld/quip-nyc-product.jsonld.
+    why_it_matters: >-
+      The retail product-data vocabulary. A shopping agent or crawler reads price,
+      availability and identifier without scraping.
+  note: >-
+    REWARD-ONLY. Both entries were read out of surfaces quip actually serves, not inferred
+    from the sector.
+standards:
+- id: ucp-shopping
+  name: Universal Commerce Protocol — dev.ucp.shopping
+  conforms: true
+  version: '2026-04-08'
+  evidence: >-
+    /.well-known/ucp returns a merchant profile declaring service dev.ucp.shopping at
+    version 2026-04-08 (and 2026-01-23), transport mcp, with capabilities cart, checkout,
+    fulfillment, discount, order, catalog.search, catalog.lookup and dev.shopify.catalog,
+    plus three payment handlers.
+  spec: https://ucp.dev/2026-04-08/specification/overview/
+- id: mcp
+  name: Model Context Protocol
+  conforms: true
+  version: '2025-06-18'
+  evidence: >-
+    POST /api/ucp/mcp with a JSON-RPC 2.0 initialize returned HTTP 200 with
+    protocolVersion 2025-06-18, serverInfo universal-commerce 0.1.0 and capabilities for
+    tools, prompts, resources and logging; tools/list returned 13 tools each with a JSON
+    Schema inputSchema.
+- id: jsonrpc-2.0
+  name: JSON-RPC 2.0
+  conforms: true
+  evidence: The MCP endpoint accepts and answers jsonrpc:"2.0" envelopes, including error objects.
+- id: json-schema-2020-12
+  name: JSON Schema draft 2020-12
+  conforms: true
+  evidence: >-
+    Every one of the thirteen tool inputSchema objects declares
+    $schema https://json-schema.org/draft/2020-12/schema.
+- id: oidc-discovery
+  name: OpenID Connect Discovery 1.0
+  conforms: true
+  evidence: >-
+    /.well-known/openid-configuration returns issuer, authorization_endpoint,
+    token_endpoint, jwks_uri, response_types_supported, subject_types_supported and
+    id_token_signing_alg_values_supported.
+- id: rfc8414-oauth-metadata
+  name: RFC 8414 OAuth 2.0 Authorization Server Metadata
+  conforms: true
+  evidence: /.well-known/oauth-authorization-server returns 200 with the required metadata fields.
+- id: rfc9728-protected-resource-metadata
+  name: RFC 9728 OAuth 2.0 Protected Resource Metadata
+  conforms: true
+  evidence: >-
+    /.well-known/oauth-protected-resource returns 200 naming resource
+    https://www.getquip.com, its authorization server, and bearer_methods_supported
+    ["header"]. Fewer than one provider in the catalog serves this document.
+- id: oauth2-pkce
+  name: RFC 7636 PKCE
+  conforms: true
+  evidence: code_challenge_methods_supported is ["S256"].
+- id: graphql
+  name: GraphQL (Shopify Storefront 2026-07)
+  conforms: true
+  evidence: >-
+    Anonymous full introspection returned a valid __schema with 415 types, 34 query root
+    fields and 41 mutations.
+- id: schema-org-product
+  name: schema.org Product / Offer (JSON-LD)
+  conforms: true
+  evidence: >-
+    Product pages embed a valid application/ld+json Product node with sku, brand, offers[]
+    and aggregateRating. Saved to json-ld/quip-nyc-product.jsonld.
+- id: llmstxt
+  name: llms.txt
+  conforms: true
+  evidence: /llms.txt returns 200 text/markdown with agent-facing store instructions.
+- id: agents-md
+  name: agents.md
+  conforms: true
+  evidence: >-
+    /agents.md returns 200 text/markdown and is named by /llms.txt as the canonical
+    agent-facing description of the store.
+- id: robots-exclusion
+  name: Robots Exclusion Protocol
+  conforms: true
+  evidence: /robots.txt returns 200 with User-agent/Disallow directives and a sitemap reference.
+- id: rfc8615-well-known
+  name: RFC 8615 well-known URIs
+  conforms: true
+  evidence: >-
+    Serves /.well-known/ucp, /openid-configuration, /oauth-authorization-server and
+    /oauth-protected-resource. A control path returned 404, so these are real registrations
+    rather than a catch-all.
+- id: sitemaps-xml
+  name: Sitemaps.org XML
+  conforms: true
+  evidence: /sitemap.xml returns 200 application/xml with a valid sitemapindex.
+- id: rfc9116-security-txt
+  name: RFC 9116 security.txt
+  conforms: false
+  evidence: /.well-known/security.txt returned 404 on www.getquip.com.
+- id: rfc9457-problem-details
+  name: RFC 9457 Problem Details
+  conforms: false
+  evidence: >-
+    Errors are JSON-RPC 2.0 error objects (observed: -32001 with HTTP 422) and GraphQL
+    errors[], not application/problem+json.
+- id: idempotency-key
+  name: Idempotency-Key (draft-ietf-httpapi-idempotency-key-header)
+  conforms: false
+  evidence: >-
+    No idempotency key appears in any of the thirteen tool input schemas and none is
+    documented in /agents.md.
+- id: a2a
+  name: A2A Agent Card
+  conforms: false
+  evidence: >-
+    /.well-known/agent-card.json and /.well-known/agent.json returned 404 on
+    www.getquip.com and 301 on bb73c3-5.myshopify.com.
+- id: openapi
+  name: OpenAPI
+  conforms: false
+  evidence: >-
+    No OpenAPI or Swagger document found on any host — see
+    mcp/quip-nyc-tool-crosswalk.yml surfaces.openapi_note for the probe list.
+- id: asyncapi
+  name: AsyncAPI
+  conforms: false
+  evidence: >-
+    No public event, streaming or webhook surface is published for this merchant storefront.
+- id: apis-json
+  name: APIs.json
+  conforms: false
+  evidence: /.well-known/api-catalog returned 404 and no apis.json is published.
+compliance_program:
+  published_by_quip: false
+  certifications: []
+  note: >-
+    quip publishes no trust center, no certification list and no security.txt. Payment card
+    handling is delegated to Shopify, Shop Pay and Google Pay per the UCP payment_handlers
+    block; quip's own pages make no SOC 2 / ISO 27001 / PCI DSS claim. No Compliance pointer
+    is emitted.
+x-evidence:
+  fetched: '2026-08-26'
+  probes:
+  - {url: 'https://www.getquip.com/.well-known/ucp', status: 200}
+  - {url: 'https://www.getquip.com/.well-known/oauth-protected-resource', status: 200}
+  - {url: 'https://www.getquip.com/api/ucp/mcp', status: 200}
+  - {url: 'https://www.getquip.com/api/2026-07/graphql.json', status: 200}
+  - {url: 'https://www.getquip.com/.well-known/openid-configuration', status: 200}
+  - {url: 'https://www.getquip.com/products/green-refresh-bag', status: 200}
+  - {url: 'https://www.getquip.com/.well-known/security.txt', status: 404}
+  - {url: 'https://www.getquip.com/.well-known/agent-card.json', status: 404}
+  - {url: 'https://www.getquip.com/.well-known/api-catalog', status: 404}
+  - {url: 'https://www.getquip.com/openapi.json', status: 404}

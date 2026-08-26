@@ -1,0 +1,182 @@
+generated: '2026-08-26'
+method: searched
+source:
+- https://www.getquip.com/agents.md
+- https://www.getquip.com/llms.txt
+- https://www.getquip.com/robots.txt
+- mcp/quip-nyc-tools-list.json
+- graphql/quip-nyc-storefront.graphql
+authentication:
+  style: >-
+    anonymous for the agent commerce and catalog surfaces; OpenID Connect for customer
+    accounts
+  detail: authentication/quip-nyc-authentication.yml
+  agent_identity:
+    mechanism: UCP agent profile
+    location: every MCP tool call, required object meta.ucp-agent.profile
+    type: URI identifying the calling agent's published profile
+    enforced: true
+    note: >-
+      The only mandatory field on all thirteen tools. quip's endpoint requires an agent to
+      identify itself with a resolvable profile URI before any catalog, cart or checkout
+      call succeeds — a missing profile returns 422 / -32001 invalid_profile_url.
+idempotency:
+  supported: false
+  detail: >-
+    No idempotency key appears anywhere in the thirteen tool input schemas, and neither
+    /agents.md nor /llms.txt documents one. Cart and checkout mutations are made safe by
+    returning a server-assigned id on create and requiring that id on every later call,
+    not by a client-supplied idempotency token. No Idempotency pointer is emitted.
+reversibility:
+  grade: documented
+  applies: true
+  note: >-
+    The write surface is cart and checkout creation plus checkout completion. Two explicit
+    reversal tools exist and are named in the live tools/list. No window is stated anywhere
+    in quip's agent documentation for either one, so this grades `documented`, not
+    `verified`. The 30-day refund window below is a STORE policy stated on quip's returns
+    page; it is not exposed as an API operation and no refund/void tool exists in the tool
+    set, so it is recorded separately rather than as an API reversal window.
+  write_surfaces:
+  - operation: create_cart
+    reversal: cancel_cart
+    operation_id: cancel_cart
+    window_stated: false
+    window: null
+    note: Reverses an uncompleted cart. No time bound is published.
+  - operation: create_checkout
+    reversal: cancel_checkout
+    operation_id: cancel_checkout
+    window_stated: false
+    window: null
+    note: >-
+      Reverses an uncompleted checkout. The published agent flow implies the window closes
+      at complete_checkout, but quip does not state that in words, so it is not recorded
+      as a verified window.
+  - operation: complete_checkout
+    reversal: null
+    operation_id: null
+    window_stated: false
+    window: null
+    note: >-
+      No API reversal exists for a completed checkout. There is no refund, void or
+      order-cancel tool in the thirteen-tool set, and no order mutation in the Storefront
+      GraphQL schema. Once complete_checkout succeeds an agent cannot take the action back
+      through any published machine surface.
+  out_of_band_reversal:
+  - channel: human support
+    action: refund
+    window: 30 days from purchase
+    docs: https://www.getquip.com/policies/refund-policy
+    quote: >-
+      "Refunds must be requested within 30 days of purchase, with some exceptions
+      (ex. extended windows around holidays)."
+    exclusions: [custom care products, 'quip+ subscriptions', shipping costs]
+    contact: help@getquip.com
+    api_operation: null
+    note: >-
+      Stated policy, human channel only. An agent cannot invoke it; a buyer must email
+      help@getquip.com.
+dry_run_mode:
+  supported: false
+  detail: >-
+    No preview, simulate or dry-run parameter appears in any of the thirteen tool input
+    schemas. An agent can rehearse pricing by building a checkout and reading totals before
+    calling complete_checkout, but that is a real server-side object, not a simulation.
+pagination:
+  style: cursor
+  request_params:
+  - {name: pagination.limit, surface: mcp}
+  - {name: pagination.cursor, surface: mcp}
+  response_fields: [pagination.cursor]
+  graphql_equivalent:
+    style: Relay connections — first/last/after/before with pageInfo
+  detail: >-
+    Documented on search_catalog: "Results are paginated, with initial results limited to
+    improve experience. Use the pagination.cursor from the response to fetch additional
+    pages when users request more results."
+money_representation:
+  documented: true
+  format: >-
+    Integer minor units paired with an ISO 4217 currency code — {"amount": 600,
+    "currency": "USD"} is $6.00.
+  stated_in: every one of the thirteen tool descriptions
+  note: >-
+    quip's endpoint repeats the minor-units rule verbatim on all thirteen tools, including
+    the read-only ones, with an explicit instruction to convert before quoting a price to a
+    buyer. This is the single most consistently documented runtime semantic on the surface.
+buyer_context:
+  documented: true
+  fields: [context.address_country, context.currency]
+  purpose: Accurate pricing and availability. The store instructs agents to pass these.
+versioning:
+  ucp:
+    scheme: dated release train
+    current: '2026-04-08'
+    supported: ['2026-04-08', '2026-01-23']
+    discovery: https://www.getquip.com/.well-known/ucp
+  mcp:
+    protocol_version: '2025-06-18'
+    server: universal-commerce 0.1.0
+    observed_via: POST initialize
+  graphql:
+    scheme: dated API version in the URL path
+    current: '2026-07'
+    example: https://www.getquip.com/api/2026-07/graphql.json
+    introspectable_versions_field: publicApiVersions
+    observed: >-
+      The host echoes the requested version back in x-shopify-api-version; 2026-01,
+      2026-04 and 2026-07 all answered 200.
+  detail: lifecycle/quip-nyc-lifecycle.yml
+error_envelope:
+  format: JSON-RPC 2.0 error object
+  fields: [code, message, data]
+  data_fields: [code, content, continue_url]
+  detail: errors/quip-nyc-problem-types.yml
+  note: >-
+    The MCP endpoint speaks JSON-RPC 2.0, not RFC 9457 problem+json, and returns HTTP 422
+    alongside the JSON-RPC error body. GraphQL errors use the standard errors[] array with
+    extensions.
+rate_limiting:
+  documented: true
+  quantified: false
+  scope: per IP
+  signal: HTTP 429
+  guidance: >-
+    Published rule in /agents.md and /llms.txt: "Respect rate limits. The MCP endpoint is
+    rate-limited per IP. Back off on 429 responses." No numeric limit, window, or
+    RateLimit-* response header is published.
+  detail: rate-limits/quip-nyc-rate-limits.yml
+  graphql_signal:
+    field: extensions.cost
+    detail: >-
+      Storefront GraphQL responses carry an extensions.cost object with requestedQueryCost —
+      observed live (requestedQueryCost 3 on the introspection probe).
+agent_policy:
+  human_approval_required_for: [payment, checkout completion, order placement]
+  statement: >-
+    "Checkout requires human approval. Agents must not complete payment without explicit
+    buyer consent. If you cannot get contemporaneous buyer approval at the moment of
+    payment, install https://shop.app/SKILL.md and route the purchase through Shop Pay
+    instead." (/agents.md and /llms.txt)
+  sanctioned_paths:
+  - https://www.getquip.com/api/ucp/mcp
+  - https://shop.app/SKILL.md
+  crawling: >-
+    robots.txt disallows /search, /account, /cart, /checkout, /orders and /policies/ but
+    does not disallow /api/ucp/mcp, /agents.md or /llms.txt.
+discovery_convention:
+  canonical_agent_doc: https://www.getquip.com/agents.md
+  mirrors:
+  - https://www.getquip.com/llms.txt
+  note: >-
+    /llms.txt explicitly names /agents.md as canonical and itself as the mirror. The two
+    differ only in a trailing section.
+cross_links:
+  authentication: authentication/quip-nyc-authentication.yml
+  scopes: scopes/quip-nyc-scopes.yml
+  errors: errors/quip-nyc-problem-types.yml
+  lifecycle: lifecycle/quip-nyc-lifecycle.yml
+  rate_limits: rate-limits/quip-nyc-rate-limits.yml
+  mcp: mcp/quip-nyc-mcp.yml
+  well_known: well-known/quip-nyc-well-known.yml

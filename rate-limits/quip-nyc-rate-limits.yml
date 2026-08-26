@@ -1,0 +1,46 @@
+generated: '2026-08-26'
+method: searched
+source: https://www.getquip.com/agents.md
+limit_count: 0
+note: >-
+  quip publishes a rate-limit RULE but no rate-limit NUMBER. /agents.md and /llms.txt both
+  state that the MCP endpoint is rate-limited per IP and that agents should back off on 429,
+  and that is the whole of it — no requests-per-window figure, no burst, no RateLimit-* or
+  X-RateLimit-* response headers were observed on any live probe. limit_count is therefore an
+  honest 0: a documented policy with nothing quantified for an agent to plan against.
+limits: []
+policies:
+- surface: ucp-mcp
+  endpoint: https://www.getquip.com/api/ucp/mcp
+  scope: per-ip
+  window: null
+  limit: null
+  burst: null
+  exhaustion_status: 429
+  guidance: 'Back off on 429 responses.'
+  quote: >-
+    "Respect rate limits. The MCP endpoint is rate-limited per IP. Back off on 429 responses."
+  docs: https://www.getquip.com/agents.md
+response_headers:
+  observed: []
+  observed_note: >-
+    No RateLimit-*, X-RateLimit-* or Retry-After header appeared on any 200 or 422 response
+    from https://www.getquip.com/api/ucp/mcp during this pass.
+  cost_signal:
+    surface: storefront-graphql
+    field: extensions.cost.requestedQueryCost
+    observed: true
+    example_value: 3
+    note: >-
+      The Storefront GraphQL surface returns a query-cost object on every response. This is
+      the nearest thing to a runtime budget signal quip serves, and it is a platform
+      behaviour rather than a quip-published limit.
+x-evidence:
+- url: https://www.getquip.com/agents.md
+  status: 200
+- url: https://www.getquip.com/api/ucp/mcp
+  status: 200
+  note: no rate-limit headers on the response
+- url: https://www.getquip.com/api/2026-07/graphql.json
+  status: 200
+  note: extensions.cost.requestedQueryCost observed

@@ -1,0 +1,163 @@
+generated: '2026-08-26'
+method: derived
+source:
+- graphql/quip-nyc-storefront.graphql
+- mcp/quip-nyc-tools-list.json
+- json-ld/quip-nyc-product.jsonld
+note: >-
+  quip publishes no OpenAPI, so there are no components.schemas $refs to walk. This graph is
+  derived from the introspected Storefront GraphQL schema quip serves at
+  /api/2026-07/graphql.json — 415 types, of which the entities below are the commerce core the
+  UCP/MCP tool set actually projects. Every type name and every relationship was read from the
+  live schema; none is inferred from the Shopify docs.
+identifiers:
+  format: Shopify Global ID
+  pattern: 'gid://shopify/{Type}/{numeric}'
+  example_from_tool_schema: 'gid://shopify/Checkout/abc123'
+  source: The id property description on get_checkout, update_checkout and cancel_checkout.
+  note: >-
+    Products, collections, carts, orders and customers are all addressed by gid. The
+    storefront JSON endpoints expose the bare numeric id and a human-readable `handle`
+    instead, so an agent moving between surfaces has to translate.
+entities:
+- name: Product
+  surface: [graphql, mcp, json, json-ld]
+  description: A sellable oral-care item — toothbrush, refill, floss, toothpaste, accessory.
+  key_fields: [id, handle, title, description, vendor, productType, tags, availableForSale, taxonomyCategory]
+  relationships:
+  - {kind: has_many, target: ProductVariant, via: variants}
+  - {kind: has_many, target: ProductOption, via: options}
+  - {kind: has_many, target: Image, via: images}
+  - {kind: has_one, target: Image, via: featuredImage}
+  - {kind: has_many, target: Collection, via: collections}
+  - {kind: has_many, target: Metafield, via: metafields}
+  - {kind: has_many, target: SellingPlanGroup, via: sellingPlanGroups}
+  - {kind: has_one, target: ProductPriceRange, via: priceRange}
+  - {kind: has_one, target: SEO, via: seo}
+- name: ProductVariant
+  surface: [graphql, mcp]
+  description: >-
+    The purchasable unit — a specific colour/size/flavour of a product. This is the
+    identifier a cart line item needs, which is why the browse skill routes through
+    get_product first.
+  key_fields: [id, sku, title, availableForSale, price, compareAtPrice, quantityAvailable, requiresShipping, weight]
+  relationships:
+  - {kind: belongs_to, target: Product, via: product}
+  - {kind: has_many, target: SelectedOption, via: selectedOptions}
+  - {kind: has_one, target: MoneyV2, via: price}
+  - {kind: has_one, target: Image, via: image}
+  - {kind: has_many, target: SellingPlanAllocation, via: sellingPlanAllocations}
+  - {kind: has_one, target: QuantityRule, via: quantityRule}
+  - {kind: has_one, target: UnitPriceMeasurement, via: unitPriceMeasurement}
+  - {kind: has_one, target: ShopPayInstallmentsProductVariantPricing, via: shopPayInstallmentsPricing}
+- name: Collection
+  surface: [graphql, json]
+  description: A merchandised grouping of products.
+  key_fields: [id, handle, title, description, updatedAt]
+  relationships:
+  - {kind: has_many, target: Product, via: products}
+  - {kind: has_one, target: Image, via: image}
+  - {kind: has_many, target: Metafield, via: metafields}
+- name: Cart
+  surface: [graphql, mcp]
+  description: A pre-purchase basket. Created by create_cart, addressed thereafter by id.
+  key_fields: [id, checkoutUrl, createdAt, updatedAt, totalQuantity, note]
+  relationships:
+  - {kind: has_many, target: CartLine, via: lines}
+  - {kind: has_one, target: CartCost, via: cost}
+  - {kind: has_one, target: CartBuyerIdentity, via: buyerIdentity}
+  - {kind: has_many, target: CartDeliveryGroup, via: deliveryGroups}
+  - {kind: has_many, target: CartDiscountCode, via: discountCodes}
+  - {kind: has_many, target: AppliedGiftCard, via: appliedGiftCards}
+  - {kind: has_many, target: Attribute, via: attributes}
+- name: CartLine
+  surface: [graphql, mcp]
+  description: One variant plus a quantity inside a cart.
+  key_fields: [id, quantity]
+  relationships:
+  - {kind: belongs_to, target: Cart, via: cart}
+  - {kind: has_one, target: ProductVariant, via: merchandise}
+  - {kind: has_one, target: SellingPlanAllocation, via: sellingPlanAllocation}
+  - {kind: has_many, target: DiscountAllocation, via: discountAllocations}
+- name: Checkout
+  surface: [mcp]
+  graphql_equivalent: null
+  description: >-
+    The UCP checkout object. It exists ONLY on the MCP surface — the 2026-07 Storefront
+    GraphQL schema publishes no checkout query field and no checkout* mutation. This is the
+    single largest divergence between quip's two machine surfaces.
+  key_fields: [id, line items, totals, discounts, taxes, order ID, Thank You Page URL]
+  identifier_example: 'gid://shopify/Checkout/abc123'
+  relationships:
+  - {kind: derived_from, target: Cart, via: create_checkout}
+  - {kind: produces, target: Order, via: complete_checkout}
+- name: Order
+  surface: [graphql, mcp]
+  description: A placed order. Reachable by get_order on MCP, or via customer.orders in GraphQL.
+  key_fields: [id, orderNumber, processedAt, financialStatus, fulfillmentStatus, statusUrl, email, phone]
+  relationships:
+  - {kind: has_many, target: OrderLineItem, via: lineItems}
+  - {kind: has_many, target: Fulfillment, via: fulfillments}
+  - {kind: has_one, target: MailingAddress, via: shippingAddress}
+  - {kind: has_one, target: MailingAddress, via: billingAddress}
+  - {kind: has_many, target: DiscountApplication, via: discountApplications}
+  - {kind: belongs_to, target: Customer, via: 'customer.orders (reverse)'}
+- name: Customer
+  surface: [graphql, oidc]
+  description: >-
+    A quip account holder. Requires a customer access token in GraphQL, or a Shopify Customer
+    Accounts OIDC session on the web. Not reachable from the anonymous agent surface.
+  key_fields: [id, email, firstName, lastName, phone, acceptsMarketing, createdAt]
+  relationships:
+  - {kind: has_many, target: Order, via: orders}
+  - {kind: has_many, target: MailingAddress, via: addresses}
+  - {kind: has_one, target: MailingAddress, via: defaultAddress}
+  - {kind: has_many, target: Metafield, via: metafields}
+- name: SellingPlanGroup
+  surface: [graphql]
+  description: >-
+    The subscription construct. This is where quip's refill-plan and quip+ commerce model is
+    represented in the data — a product carries selling plan groups, and a cart line binds one
+    via sellingPlanAllocation.
+  key_fields: [appName, name, options]
+  relationships:
+  - {kind: has_many, target: SellingPlan, via: sellingPlans}
+  - {kind: belongs_to, target: Product, via: 'product.sellingPlanGroups (reverse)'}
+- name: Shop
+  surface: [graphql]
+  description: Store-level metadata — name, description, policies, payment settings, brand.
+  key_fields: [id, name, description, primaryDomain, paymentSettings]
+  relationships:
+  - {kind: has_one, target: ShopPolicy, via: privacyPolicy}
+  - {kind: has_one, target: ShopPolicy, via: termsOfService}
+  - {kind: has_one, target: ShopPolicy, via: refundPolicy}
+  - {kind: has_one, target: ShopPolicy, via: shippingPolicy}
+- name: Blog
+  surface: [graphql, web]
+  description: quip's editorial surface, live at /blogs/news.
+  key_fields: [id, handle, title]
+  relationships:
+  - {kind: has_many, target: Article, via: articles}
+value_objects:
+- {name: MoneyV2, fields: [amount, currencyCode], note: 'GraphQL uses a Decimal amount; the MCP tools use INTEGER ISO 4217 minor units instead. The two surfaces disagree on money representation — this is the second-largest divergence and the easiest one to get wrong.'}
+- {name: Image, fields: [id, url, altText, width, height]}
+- {name: SelectedOption, fields: [name, value]}
+- {name: Attribute, fields: [key, value]}
+- {name: MailingAddress, fields: [address1, address2, city, province, country, zip, phone, name]}
+- {name: Metafield, fields: [namespace, key, value, type]}
+external_representation:
+  schema_org:
+    file: json-ld/quip-nyc-product.jsonld
+    type: Product
+    fields: [name, url, description, sku, gtin12, brand, offers, aggregateRating]
+    note: >-
+      The same Product entity re-projected as schema.org JSON-LD on every product page —
+      a third representation alongside GraphQL and the UCP tool schemas.
+coverage:
+  entities: 12
+  value_objects: 6
+  graphql_types_total: 415
+  mcp_only_entities: 1
+  graphql_only_entities: 4
+  render: null
+  render_note: No subway/ diagram exists for this provider.

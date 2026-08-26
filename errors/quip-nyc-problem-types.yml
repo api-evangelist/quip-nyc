@@ -1,0 +1,87 @@
+generated: '2026-08-26'
+method: probed
+source:
+- https://www.getquip.com/api/ucp/mcp
+- graphql/quip-nyc-storefront.graphql
+- mcp/quip-nyc-tools-list.json
+format: jsonrpc-2.0
+rfc9457: false
+note: >-
+  quip publishes no OpenAPI, so there are no 4xx/5xx response objects to derive from. This
+  catalog records the error envelopes actually observed on the wire against quip's own
+  hosts, plus the GraphQL user-error types published in the introspected schema. Nothing
+  here is invented — every JSON-RPC code and every type name was returned by or read from a
+  live response.
+envelopes:
+- surface: ucp-mcp
+  endpoint: https://www.getquip.com/api/ucp/mcp
+  media_type: application/json
+  shape: JSON-RPC 2.0 error object
+  fields: [jsonrpc, id, error.code, error.message, error.data]
+  data_fields: [code, content, continue_url]
+  http_status_note: >-
+    The endpoint returns a non-2xx HTTP status alongside the JSON-RPC body — HTTP 422
+    observed for the discovery failure below.
+- surface: storefront-graphql
+  endpoint: https://www.getquip.com/api/2026-07/graphql.json
+  media_type: application/json
+  shape: GraphQL errors[] array with extensions
+  fields: [message, locations, path, extensions]
+problem_types:
+- id: ucp-invalid-profile-url
+  surface: ucp-mcp
+  jsonrpc_code: -32001
+  message: UCP discovery failed
+  data_code: invalid_profile_url
+  http_status: 422
+  observed_content: 'Unable to fetch agent profile: Missing profile uri'
+  continue_url: https://bb73c3-5.myshopify.com/
+  cause: >-
+    A tool call, prompts/list or resources/list was made without a resolvable
+    meta.ucp-agent.profile URI.
+  remediation: >-
+    Publish an agent profile at a fetchable https URI and pass it as
+    meta.ucp-agent.profile on every call.
+  method: probed
+  evidence: >-
+    Returned live on 2026-08-26 for POST tools/call search_catalog with meta omitted, and
+    for prompts/list and resources/list.
+- id: rate-limited
+  surface: ucp-mcp
+  http_status: 429
+  cause: Per-IP rate limit exceeded on the MCP endpoint.
+  remediation: Back off and retry. quip publishes no Retry-After guidance or numeric limit.
+  method: searched
+  evidence: >-
+    Documented in /agents.md and /llms.txt — "The MCP endpoint is rate-limited per IP. Back
+    off on 429 responses." Not observed on the wire during this pass.
+graphql_user_error_types:
+  note: >-
+    Read verbatim from the introspected 2026-07 schema. These are typed field-level errors
+    returned inside mutation payloads, not transport errors.
+  types:
+  - CartUserError
+  - CustomerUserError
+  - MetafieldDeleteUserError
+  - MetafielsSetUserError
+  - UserError
+  - UserErrorsShopPayPaymentRequestSessionUserErrors
+  enums:
+  - CartErrorCode
+  - CustomerErrorCode
+  - MetafieldDeleteErrorCode
+  - MetafieldsSetUserErrorCode
+coverage:
+  problem_types_documented: 2
+  observed_live: 1
+  provider_published_error_reference: false
+  provider_published_error_reference_note: >-
+    quip publishes no error reference page. The JSON-RPC codes are emitted by the Shopify
+    UCP implementation; the GraphQL user-error enums are in the schema quip serves.
+x-evidence:
+- url: https://www.getquip.com/api/ucp/mcp
+  http_status: 422
+  note: 'POST tools/call search_catalog without meta.ucp-agent.profile'
+- url: https://www.getquip.com/api/ucp/mcp
+  http_status: 200
+  note: 'POST tools/list — the success control'

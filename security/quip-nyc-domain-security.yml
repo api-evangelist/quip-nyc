@@ -1,0 +1,35 @@
+generated: '2026-08-26'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+note: >-
+  shopify.dev appears below only because it is the humanURL of the Storefront GraphQL API
+  entry — it is the platform vendor's documentation host, not a quip-controlled domain, and
+  its posture should not be read as quip's. The quip-controlled surface is www.getquip.com /
+  getquip.com: TLS 1.3, HSTS with a ~91-day max-age, DNSSEC signed, SPF and DMARC present at
+  p=quarantine, and NO CAA record published.
+hosts:
+- host: www.getquip.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Nov  8 07:07:01 2026 GMT
+  hsts: true
+  hsts_max_age: 7889238
+- host: shopify.dev
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Oct 10 06:37:15 2026 GMT
+  hsts: true
+  hsts_max_age: 15552000
+domains:
+- domain: getquip.com
+  dnssec: true
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: quarantine
+- domain: shopify.dev
+  dnssec: false
+  caa: []
+  spf: false
+  dmarc: true
+  dmarc_policy: reject

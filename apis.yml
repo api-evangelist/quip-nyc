@@ -1,23 +1,152 @@
 aid: quip-nyc
 name: Quip NYC
-description: 'Quip NYC is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  quip NYC Inc. is a Brooklyn, New York oral care company founded in 2015 by Simon Enever and
+  Bill May, selling dentist-designed electric toothbrushes, water flossers, refillable floss,
+  toothpaste, mouthwash and whitening products direct to consumers on a recurring refill
+  subscription. It has raised roughly $272M across its rounds and serves millions of
+  subscribers. quip publishes no developer portal, API reference, OpenAPI specification or
+  SDK of its own. Its entire machine-readable surface is its storefront: a Shopify-hosted
+  commerce platform that serves agent-facing instructions at /agents.md and /llms.txt, a
+  Universal Commerce Protocol merchant profile at /.well-known/ucp, an anonymous Model
+  Context Protocol endpoint exposing thirteen catalog, cart, checkout and order tools, an
+  openly introspectable Storefront GraphQL API, and a documented unauthenticated product
+  JSON surface. The company's published agent policy requires contemporaneous human approval
+  before any agent completes a payment.
+image: https://www.getquip.com/cdn/shop/files/Screenshot_2025-04-16_at_6.12.36_PM.png?v=1744899824
 url: https://raw.githubusercontent.com/api-evangelist/quip-nyc/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
-specificationVersion: '0.20'
+specificationVersion: '0.23'
 created: '2026-08-26'
 modified: '2026-08-26'
 tags:
 - Company
-apis: []
+- Oral Care
+- Consumer Health
+- Personal Care
+- Retail
+- E-Commerce
+- Direct to Consumer
+- Subscription
+- Agentic Commerce
+- Shopify
+x-enrichment:
+  date: '2026-08-26'
+  status: enriched
+  artifacts_added: 28
+  pass: local-v1
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+apis:
+- aid: quip-nyc-ucp-commerce-mcp
+  name: quip UCP Commerce MCP API
+  description: >-
+    An anonymous Model Context Protocol endpoint implementing the Universal Commerce Protocol
+    (UCP) shopping service for the quip online store. Exposes thirteen tools covering catalog
+    search and lookup, product detail, cart lifecycle, checkout lifecycle and order retrieval,
+    each carrying a full JSON Schema 2020-12 input contract. tools/list and initialize are
+    anonymous; every tools/call requires a resolvable UCP agent profile URI. Checkout
+    completion requires contemporaneous human buyer approval per the store's published agent
+    rules, and no API-level reversal of a completed checkout exists.
+  humanURL: https://www.getquip.com/agents.md
+  baseURL: https://www.getquip.com/api/ucp/mcp
+  tags:
+  - MCP
+  - Agentic Commerce
+  - Commerce
+  - Checkout
+  - Catalog
+  properties:
+  - type: MCPServer
+    url: mcp/quip-nyc-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/quip-nyc-tool-crosswalk.yml
+- aid: quip-nyc-storefront-graphql
+  name: quip Storefront GraphQL API
+  description: >-
+    The Shopify Storefront GraphQL API as deployed on the quip domain, version 2026-07. Schema
+    introspection is open to anonymous callers and returns 415 types, 34 query root fields and
+    41 mutations covering products, variants, collections, selling plans, blogs, pages, search,
+    cart and customer accounts. Responses carry an extensions.cost query-cost object. Fifty-two
+    fields are marked @deprecated in the schema.
+  humanURL: https://shopify.dev/docs/api/storefront
+  baseURL: https://www.getquip.com/api/2026-07/graphql.json
+  tags:
+  - GraphQL
+  - Commerce
+  - Catalog
+  - Cart
+  properties:
+  - type: GraphQL
+    url: graphql/quip-nyc-storefront.graphql
+- aid: quip-nyc-storefront-json
+  name: quip Storefront JSON Endpoints
+  description: >-
+    The read-only JSON surface the store documents for agents that only need to browse catalog
+    data without transacting — product JSON by handle, collection product listings, product
+    search and the sitemap. No authentication is required; verified live at
+    /products.json and /collections/all/products.json.
+  humanURL: https://www.getquip.com/agents.md
+  baseURL: https://www.getquip.com/
+  tags:
+  - JSON
+  - Catalog
+  - Read Only
+  properties:
+  - type: JSONLD
+    url: json-ld/quip-nyc-product.jsonld
 common:
+- type: DomainSecurity
+  url: security/quip-nyc-domain-security.yml
 - type: Website
-  url: https://www.hiive.com/securities/quip-nyc-stock
+  url: https://www.getquip.com/
+- type: Documentation
+  url: https://www.getquip.com/agents.md
+- type: LLMsTxt
+  url: llms/quip-nyc-llms.txt
+- type: WellKnown
+  url: well-known/quip-nyc-well-known.yml
+- type: OpenIDConnect
+  url: well-known/quip-nyc-openid-configuration.json
+- type: Authentication
+  url: authentication/quip-nyc-authentication.yml
+- type: OAuthScopes
+  url: scopes/quip-nyc-scopes.yml
+- type: Conventions
+  url: conventions/quip-nyc-conventions.yml
+- type: Conformance
+  url: conformance/quip-nyc-conformance.yml
+- type: ErrorCatalog
+  url: errors/quip-nyc-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/quip-nyc-lifecycle.yml
+- type: DataModel
+  url: data-model/quip-nyc-data-model.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: AgenticAccess
+  url: agentic-access/quip-nyc-agentic-access.yml
+- type: RateLimits
+  url: rate-limits/quip-nyc-rate-limits.yml
+- type: Plans
+  url: plans/quip-nyc-plans-pricing.yml
+- type: Packages
+  url: packages/quip-nyc-packages.yml
+- type: Blog
+  url: https://www.getquip.com/blogs/news
+- type: Support
+  url: https://www.getquip.com/pages/contact
+- type: HelpCenter
+  url: https://www.getquip.com/pages/help
+- type: GitHubOrganization
+  url: https://github.com/getquip
+- type: SignUp
+  url: https://www.getquip.com/account/login
+- type: TermsOfService
+  url: https://www.getquip.com/policies/terms-of-service
+- type: PrivacyPolicy
+  url: https://www.getquip.com/policies/privacy-policy

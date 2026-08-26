@@ -1,0 +1,103 @@
+generated: '2026-08-26'
+method: probed
+source: https://www.getquip.com/.well-known/
+notes: >-
+  Control probe of /.well-known/this-path-should-not-exist-xyz on www.getquip.com returned
+  404 (text/html, 4264 bytes), confirming this host does NOT answer /.well-known/* with a
+  catch-all 200 — the 200s recorded below are real registered documents, not SPA soft-404s.
+  The OIDC / OAuth metadata is served by Shopify Customer Accounts for shop id 57677807690
+  on behalf of the merchant, at quip's own hostname. The Shopify origin host
+  bb73c3-5.myshopify.com 301-redirects every path except the OAuth/OIDC metadata documents.
+hit_count: 4
+hosts:
+- host: https://www.getquip.com
+  documents:
+  - path: /.well-known/ucp
+    status: 200
+    content_type: application/json
+    file: quip-nyc-ucp.json
+    description: >-
+      Universal Commerce Protocol merchant profile — protocol version 2026-04-08,
+      supported versions, the dev.ucp.shopping MCP + embedded service endpoints,
+      seven declared capabilities, and three payment handlers.
+  - path: /.well-known/openid-configuration
+    status: 200
+    content_type: application/json
+    file: quip-nyc-openid-configuration.json
+    description: OpenID Connect Discovery 1.0 document for Shopify Customer Accounts, shop id 57677807690.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: application/json
+    file: quip-nyc-oauth-authorization-server.json
+    description: >-
+      RFC 8414 OAuth 2.0 Authorization Server Metadata — byte-identical to the OIDC
+      discovery document served at this host.
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    content_type: application/json
+    file: quip-nyc-oauth-protected-resource.json
+    description: >-
+      RFC 9728 OAuth 2.0 Protected Resource Metadata — names https://www.getquip.com as
+      the protected resource and points at the Shopify authorization server.
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/this-path-should-not-exist-xyz
+    status: 404
+    note: soft_404_control — proves the 200s above are real registrations.
+- host: https://bb73c3-5.myshopify.com
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 200
+    content_type: application/json
+    note: Same Shopify Customer Accounts document; not saved separately (duplicate of the www copy).
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: application/json
+    note: Duplicate of the www copy; not saved separately.
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    content_type: application/json
+    note: Same shape, resource is the myshopify origin host. Not saved separately.
+  - path: /.well-known/ucp
+    status: 301
+  - path: /.well-known/agent-card.json
+    status: 301
+  - path: /.well-known/agent.json
+    status: 301
+  - path: /.well-known/this-path-should-not-exist-xyz
+    status: 301
+    note: soft_404_control — this origin host 301s nearly everything to the primary domain.
+adjacent_agent_documents:
+- path: /agents.md
+  status: 200
+  content_type: text/markdown
+  file: ../llms/quip-nyc-agents.md
+  description: The canonical agent-facing description of the quip store.
+- path: /llms.txt
+  status: 200
+  content_type: text/markdown
+  file: ../llms/quip-nyc-llms.txt
+  description: Mirror of /agents.md served at the llms.txt convention path.
+- path: /robots.txt
+  status: 200
+  content_type: text/plain
+  description: >-
+    Standard Shopify robots.txt. Notably it does NOT disallow /api/ucp/mcp, /agents.md
+    or /llms.txt, but it does disallow /search, /account, /cart, /checkout and /policies/.
+- path: /sitemap.xml
+  status: 200
+  content_type: application/xml
+  description: Shopify sitemap index pointing at product, collection and page sitemaps.
+x-evidence:
+  fetched: '2026-08-26'
+  control_path: /.well-known/this-path-should-not-exist-xyz
+  control_status: 404
+  control_bytes: 4264

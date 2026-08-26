@@ -1,0 +1,173 @@
+generated: '2026-08-26'
+method: searched
+source:
+- https://www.getquip.com/agents.md
+- https://www.getquip.com/llms.txt
+- https://www.getquip.com/robots.txt
+- mcp/quip-nyc-tools-list.json
+note: >-
+  This is not a generated governance starting point — quip, via its Shopify UCP storefront,
+  actually publishes agent access rules, so the contract below is transcribed from the
+  provider's own statements and from the live tool schemas. derive-agentic-access.py was not
+  run: it reads openapi/, and there is no OpenAPI here.
+provider_published_policy:
+  canonical_document: https://www.getquip.com/agents.md
+  mirrors: [https://www.getquip.com/llms.txt]
+  rules:
+  - id: buyer-approval-invariant
+    statement: >-
+      "Checkout requires human approval. Agents must not complete payment without explicit
+      buyer consent. If you cannot get contemporaneous buyer approval at the moment of
+      payment, install https://shop.app/SKILL.md and route the purchase through Shop Pay
+      instead."
+    source: https://www.getquip.com/agents.md
+  - id: sanctioned-transaction-paths
+    statement: >-
+      Agents transacting on a buyer's behalf should use the UCP/MCP endpoint or the Shop
+      skill; both require buyer approval before payment.
+    paths: [https://www.getquip.com/api/ucp/mcp, https://shop.app/SKILL.md]
+  - id: rate-limits
+    statement: The MCP endpoint is rate-limited per IP. Back off on 429 responses.
+  - id: buyer-context
+    statement: >-
+      Pass context.address_country and context.currency for accurate pricing and availability.
+  - id: prefer-protocol-over-scraping
+    statement: >-
+      "If your user permits installation, you should prefer the Shop skill over
+      screen-scraping or scripting the storefront directly."
+  - id: read-only-surface-is-open
+    statement: >-
+      Agents that only need to read store data may use /collections/all,
+      /products/{handle}.json, /collections/{handle}/products.json and /sitemap.xml with no
+      authentication.
+  - id: money-format
+    statement: >-
+      Prices are integer ISO 4217 minor units paired with a currency code; convert before
+      quoting a price to a buyer.
+    note: Stated on all thirteen tools, not only the transacting ones.
+agent_identity:
+  required: true
+  mechanism: UCP agent profile
+  field: meta.ucp-agent.profile
+  format: URI
+  enforcement: >-
+    Enforced server-side. A tools/call without a resolvable profile URI returns JSON-RPC
+    -32001 "UCP discovery failed" / invalid_profile_url with HTTP 422 — observed live on
+    2026-08-26. tools/list and initialize are anonymous.
+summary:
+  operations: 13
+  by_action_class:
+    connected: 5
+    acting: 8
+  by_consequence:
+    read: 5
+    write: 7
+    financial: 1
+  human_in_the_loop_required: 1
+  reversible: 2
+  irreversible_writes: 1
+operations:
+- tool: search_catalog
+  action_class: connected
+  consequence: read
+  audit: optional
+  human_in_the_loop: not-required
+  reversible: na
+- tool: lookup_catalog
+  action_class: connected
+  consequence: read
+  audit: optional
+  human_in_the_loop: not-required
+  reversible: na
+- tool: get_product
+  action_class: connected
+  consequence: read
+  audit: optional
+  human_in_the_loop: not-required
+  reversible: na
+- tool: get_cart
+  action_class: connected
+  consequence: read
+  audit: optional
+  human_in_the_loop: not-required
+  reversible: na
+- tool: get_checkout
+  action_class: connected
+  consequence: read
+  audit: optional
+  human_in_the_loop: not-required
+  reversible: na
+- tool: get_order
+  action_class: connected
+  consequence: read
+  audit: recommended
+  human_in_the_loop: not-required
+  reversible: na
+  note: Returns a real customer order record; treat the response as personal data.
+- tool: create_cart
+  action_class: acting
+  consequence: write
+  audit: recommended
+  human_in_the_loop: not-required
+  reversible: yes
+  reversal: cancel_cart
+- tool: update_cart
+  action_class: acting
+  consequence: write
+  audit: recommended
+  human_in_the_loop: not-required
+  reversible: yes
+  reversal: cancel_cart
+- tool: cancel_cart
+  action_class: acting
+  consequence: write
+  audit: recommended
+  human_in_the_loop: not-required
+  reversible: no
+  note: This IS the reversal. Cancelling is itself not undoable — create a new cart.
+- tool: create_checkout
+  action_class: acting
+  consequence: write
+  audit: required
+  human_in_the_loop: recommended
+  reversible: yes
+  reversal: cancel_checkout
+- tool: update_checkout
+  action_class: acting
+  consequence: write
+  audit: required
+  human_in_the_loop: recommended
+  reversible: yes
+  reversal: cancel_checkout
+  note: Sets shipping address and delivery method — personal data enters here.
+- tool: cancel_checkout
+  action_class: acting
+  consequence: write
+  audit: required
+  human_in_the_loop: not-required
+  reversible: no
+  note: This IS the reversal.
+- tool: complete_checkout
+  action_class: acting
+  consequence: financial
+  audit: required
+  human_in_the_loop: required
+  escalation: >-
+    quip's published rule: an agent must obtain explicit, contemporaneous buyer approval at
+    the moment of payment, or route the purchase through Shop Pay via the Shop skill.
+  reversible: no
+  reversal: null
+  note: >-
+    The single irreversible action on the surface. No refund, void or order-cancel tool
+    exists in the tool set and no order mutation exists in the Storefront GraphQL schema.
+    Reversal is a human channel only — email help@getquip.com within 30 days per
+    https://www.getquip.com/policies/refund-policy.
+x-evidence:
+- url: https://www.getquip.com/agents.md
+  status: 200
+- url: https://www.getquip.com/api/ucp/mcp
+  status: 200
+  note: tools/list — all 13 tools and schemas
+- url: https://www.getquip.com/api/ucp/mcp
+  status: 422
+  note: tools/call without agent profile — identity gate observed

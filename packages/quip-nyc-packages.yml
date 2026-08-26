@@ -1,0 +1,86 @@
+generated: '2026-08-26'
+method: searched
+source:
+- https://github.com/getquip
+- https://registry.npmjs.org/
+- https://pypi.org/
+- https://rubygems.org/
+package_count: 0
+official_package_count: 0
+note: >-
+  quip publishes no first-party client library for any of its API surfaces. The company does
+  operate a public GitHub organization — github.com/getquip, verified against the domain
+  www.getquip.com, bio "Oral care platform" — with eight public repositories, but every one of
+  them is an internal tool or a fork of a third-party library, and none is a quip API client.
+  Registry checks below are recorded so the absence is a measured result rather than an
+  assumption.
+packages: []
+registry_checks:
+- registry: npm
+  name: getquip
+  version: null
+  published: null
+  result: 404 Not found
+- registry: npm
+  name: '@getquip/sdk'
+  version: null
+  published: null
+  result: 404 Not found
+- registry: npm
+  name: quip
+  version: 0.2.0
+  published: '2020-02-03'
+  result: exists but NOT quip's
+  owner_note: >-
+    Owned by npm user caolan, repository github.com/caolan/quip — an unrelated HTTP response
+    helper. Not a quip NYC package.
+- registry: pypi
+  name: quip
+  version: 0.1.12
+  published: null
+  result: exists but NOT quip's
+  owner_note: >-
+    Author Feihong Hsu, homepage github.com/feihong/quip — an unrelated markdown tool. Not a
+    quip NYC package.
+- registry: npm
+  name: expo-nordic-dfu
+  version: null
+  published: null
+  result: 404 Not found
+  owner_note: >-
+    quip has a repository of this name on GitHub but never published it to npm; it is
+    consumable only from source.
+- registry: npm
+  name: react-native-nordic-dfu
+  version: 3.2.1
+  published: '2021-10-29'
+  result: exists but NOT quip's
+  owner_note: >-
+    Owned by Pilloxa (github.com/Pilloxa/react-native-nordic-dfu); quip's repository of the
+    same name is a fork. Recorded because a fork on the provider's org is the classic
+    false-positive for a first-party SDK.
+github_organization:
+  url: https://github.com/getquip
+  verified_domain: www.getquip.com
+  public_repos: 8
+  repositories:
+  - {name: expo-nordic-dfu, kind: firmware-tooling, api_client: false, note: 'Bluetooth DFU for the connected toothbrush, not an API client.'}
+  - {name: react-native-nordic-dfu, kind: fork, api_client: false, upstream: 'github.com/Pilloxa/react-native-nordic-dfu'}
+  - {name: block-cloud-logging, kind: internal-tooling, api_client: false}
+  - {name: newgistics-ruby, kind: third-party-client, api_client: false, note: 'Client for the Newgistics shipping API — a vendor quip consumes, not an API quip publishes.'}
+  - {name: optimizely-swift-sdk, kind: fork, api_client: false, note: "Fork of Optimizely's SDK."}
+  - {name: yotpo-ruby, kind: third-party-client, api_client: false, note: 'Client for the Yotpo reviews API — again a vendor quip consumes.'}
+  - {name: fontcustom, kind: fork, api_client: false}
+  - {name: jquery-form-validator-rails, kind: fork, api_client: false}
+  finding: >-
+    The organization is real and belongs to quip, but it contains zero first-party SDKs. The
+    two Ruby gems it carries are clients FOR vendors quip integrates with, which is the
+    inverse of an SDK the pipeline is looking for. No SDKs pointer is emitted.
+x-evidence:
+- url: https://github.com/getquip
+  status: 200
+- url: https://registry.npmjs.org/getquip
+  status: 404
+- url: https://registry.npmjs.org/react-native-nordic-dfu
+  status: 200
+  note: package exists, owner is Pilloxa not quip

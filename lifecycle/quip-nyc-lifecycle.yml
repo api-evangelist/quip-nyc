@@ -1,0 +1,70 @@
+generated: '2026-08-26'
+method: probed
+source:
+- https://www.getquip.com/.well-known/ucp
+- https://www.getquip.com/api/2026-07/graphql.json
+- https://www.getquip.com/api/ucp/mcp
+- https://www.getquip.com/agents.md
+versioning:
+- surface: ucp-mcp
+  scheme: dated release train
+  current: '2026-04-08'
+  supported:
+  - version: '2026-04-08'
+    profile: https://bb73c3-5.myshopify.com/.well-known/ucp/2026-04-08
+    label: latest stable
+  - version: '2026-01-23'
+    profile: https://bb73c3-5.myshopify.com/.well-known/ucp/2026-01-23
+  discovery: https://www.getquip.com/.well-known/ucp
+  note: Two versions are advertised concurrently, so the previous train is still served.
+- surface: mcp-protocol
+  scheme: dated MCP protocol revision
+  current: '2025-06-18'
+  observed_via: 'POST initialize — the server answered protocolVersion 2025-06-18'
+  server: universal-commerce 0.1.0
+- surface: storefront-graphql
+  scheme: dated version in URI path
+  current: '2026-07'
+  example: https://www.getquip.com/api/2026-07/graphql.json
+  introspection_field: publicApiVersions
+  note: >-
+    The host echoes the requested version in x-shopify-api-version; 2026-01, 2026-04 and
+    2026-07 all answered 200. Version policy is set by the platform vendor, not by quip.
+deprecation:
+  policy_url: null
+  policy_published_by_quip: false
+  sunset_header: unknown
+  detail: >-
+    quip publishes no deprecation or sunset policy of its own. Deprecation is visible only
+    inside the GraphQL schema, where 52 fields carry the standard @deprecated directive with
+    a deprecationReason. No Deprecation pointer is emitted.
+  deprecated_graphql_fields: 52
+sla:
+  url: null
+  uptime_target: null
+  published: false
+status_page:
+  url: null
+  published: false
+  detail: >-
+    No status page exists on any quip host. status.getquip.com does not resolve (DNS returns
+    nothing). The storefront runs on Shopify, whose platform status page is a vendor property
+    and is not advertised by quip. No StatusPage pointer is emitted.
+changelog:
+  url: null
+  published: false
+  detail: >-
+    No dated changelog for any API surface. The dated UCP version train above is the only
+    release signal. No ChangeLog pointer or changelog/ artifact is emitted.
+deprecated_operations: []
+deprecated_operations_note: >-
+  No OpenAPI exists. Deprecated GraphQL fields are marked inline in
+  graphql/quip-nyc-storefront.graphql.
+x-evidence:
+- url: https://www.getquip.com/.well-known/ucp
+  http_status: 200
+- url: https://www.getquip.com/api/2026-07/graphql.json
+  http_status: 200
+- url: https://status.getquip.com/
+  http_status: 0
+  note: DNS did not resolve

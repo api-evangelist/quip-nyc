@@ -64,5 +64,36 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Quip NYC is a company surfaced via the API Evangelist harvest backlog (source: secondary-market) and added to the network as a stub for full-pipeline profiling.
-- https://www.hiive.com/securities/quip-nyc-stock
+quip NYC Inc. is a Brooklyn, New York oral care company founded in 2015 by Simon Enever and Bill
+May, selling dentist-designed electric toothbrushes, water flossers, refillable floss, toothpaste,
+mouthwash and whitening products direct to consumers on a recurring refill subscription.
+
+**quip publishes no developer portal, API reference, OpenAPI specification or SDK of its own.** Its
+entire machine-readable surface is its storefront, and that surface is real and callable today:
+
+- **UCP Commerce MCP API** — `https://www.getquip.com/api/ucp/mcp`. An anonymous Model Context
+  Protocol endpoint implementing the Universal Commerce Protocol shopping service, with **13 tools**
+  (catalog search/lookup, product detail, cart lifecycle, checkout lifecycle, order retrieval), each
+  carrying a full JSON Schema 2020-12 input contract. `tools/list` and `initialize` are anonymous;
+  every `tools/call` requires a resolvable UCP agent profile URI.
+- **Storefront GraphQL API** — `https://www.getquip.com/api/2026-07/graphql.json`. Open anonymous
+  introspection: 415 types, 34 query root fields, 41 mutations.
+- **Storefront JSON endpoints** — documented, unauthenticated product and collection JSON.
+- **Agent documentation** — `/agents.md` (canonical) mirrored at `/llms.txt`, a UCP merchant profile
+  at `/.well-known/ucp`, and OIDC / RFC 8414 / RFC 9728 metadata under `/.well-known/`.
+
+quip's published agent policy requires **contemporaneous human approval** before any agent completes
+a payment, and there is **no API-level reversal of a completed checkout** — no refund, void or
+order-cancel tool exists. Reversal is a human channel only, within the 30-day window on quip's
+returns policy.
+
+### Namesake warning
+
+Searching for "Quip API" returns `quip.com/api/reference`, the **Quip Automation API**. That is
+Salesforce's Quip document-collaboration product — a **different company**. Nothing from `quip.com`
+belongs in this repository.
+
+- https://www.getquip.com/
+- https://www.getquip.com/agents.md
+- https://github.com/getquip
+- https://www.hiive.com/securities/quip-nyc-stock (harvest source)

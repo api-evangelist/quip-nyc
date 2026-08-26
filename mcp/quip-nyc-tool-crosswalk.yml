@@ -1,0 +1,204 @@
+generated: '2026-08-26'
+method: derived
+source:
+- mcp/quip-nyc-tools-list.json
+- graphql/quip-nyc-storefront.graphql
+- https://www.getquip.com/agents.md
+note: >-
+  quip publishes no OpenAPI, so this crosswalk binds each UCP/MCP tool to the Storefront
+  GraphQL field(s) and to the documented storefront JSON endpoints instead of to
+  operationIds. Every GraphQL field named below was verified verbatim in the introspected
+  2026-07 schema; every tool name was verified in the live tools/list response. Bindings
+  are semantic — Shopify does not publish a tool-to-field mapping — so confidence is
+  recorded honestly and no binding is asserted as exact.
+surfaces:
+  openapi: null
+  openapi_note: >-
+    No OpenAPI or Swagger document is published on any quip host. Probed
+    www.getquip.com/openapi.json (404), api.getquip.com/openapi.json (404),
+    bb73c3-5.myshopify.com/openapi.json (404); developer.getquip.com,
+    developers.getquip.com and docs.getquip.com do not resolve. /api-docs, /swagger.json,
+    /api/openapi.json, /asyncapi.yaml and /.well-known/asyncapi.yaml all 404. /?wsdl returns
+    200 but the body is the Shopify storefront HTML, not a SOAP contract, and buf.build/getquip
+    returns 200 for a nonexistent org too (control probe confirmed), so neither is a hit.
+    NAMESAKE WARNING: a web search for "quip API documentation" returns quip.com/api/reference,
+    the Quip Automation API — that is Salesforce's Quip document-collaboration product, a
+    DIFFERENT COMPANY. Nothing from quip.com belongs in this repo; quip NYC Inc. is the oral
+    care company at getquip.com and publishes no such API.
+  graphql:
+    endpoint: https://www.getquip.com/api/2026-07/graphql.json
+    schema: graphql/quip-nyc-storefront.graphql
+    introspection: open
+    gated: false
+    version: '2026-07'
+    types: 415
+    query_root_fields: 34
+    mutations: 41
+  mcp:
+    endpoint: https://www.getquip.com/api/ucp/mcp
+    manifest: mcp/quip-nyc-tools-list.json
+    tools_list: open
+    gated: false
+    tools_call: gated
+    tools_call_note: >-
+      tools/list is anonymous, but every tools/call requires a resolvable
+      meta.ucp-agent.profile URI; without it the endpoint returns 422 / -32001.
+  json:
+    documented_at: https://www.getquip.com/agents.md
+    endpoints:
+    - GET /products/{handle}.json
+    - GET /collections/{handle}/products.json
+    - GET /collections/all
+    - GET /search?q={query}&type=product
+    - GET /sitemap.xml
+    verified:
+    - {url: 'https://www.getquip.com/products.json?limit=3', status: 200}
+    - {url: 'https://www.getquip.com/collections/all/products.json?limit=2', status: 200}
+crosswalk:
+- tool: search_catalog
+  category: catalog
+  graphql: [search, predictiveSearch, products]
+  json: ["GET /search?q={query}&type=product", "GET /collections/{handle}/products.json"]
+  rest: []
+  binding: graphql
+  confidence: medium
+  note: >-
+    UCP catalog search accepts natural language plus filters; the GraphQL search and
+    products connections are the closest equivalents, but the tool response conforms to
+    dev.ucp.shopping.catalog.search, not to the GraphQL connection shape.
+- tool: lookup_catalog
+  category: catalog
+  graphql: [nodes, products, productByHandle]
+  json: []
+  rest: []
+  binding: graphql
+  confidence: medium
+  note: Batch identifier resolution; nodes() is the GraphQL batch-by-id equivalent.
+- tool: get_product
+  category: catalog
+  graphql: [product, productByHandle]
+  json: ["GET /products/{handle}.json"]
+  rest: []
+  binding: graphql
+  confidence: high
+- tool: create_cart
+  category: cart
+  graphql: [cartCreate]
+  rest: []
+  binding: graphql
+  confidence: high
+- tool: get_cart
+  category: cart
+  graphql: [cart]
+  rest: []
+  binding: graphql
+  confidence: high
+- tool: update_cart
+  category: cart
+  graphql: [cartLinesAdd, cartLinesUpdate, cartLinesRemove, cartAttributesUpdate, cartNoteUpdate,
+    cartBuyerIdentityUpdate, cartDiscountCodesUpdate, cartSelectedDeliveryOptionsUpdate,
+    cartDeliveryAddressesAdd, cartDeliveryAddressesUpdate, cartDeliveryAddressesReplace]
+  rest: []
+  binding: graphql
+  confidence: medium
+  note: >-
+    One MCP tool fans out to eleven GraphQL mutations — update_cart takes a whole cart
+    delta where GraphQL splits the same work per concern.
+- tool: cancel_cart
+  category: cart
+  graphql: [cartRemovePersonalData]
+  rest: []
+  binding: graphql
+  confidence: low
+  note: >-
+    No cartDelete mutation exists in the 2026-07 schema. cartRemovePersonalData is the
+    nearest destructive GraphQL operation; the semantics are not identical.
+- tool: create_checkout
+  category: checkout
+  graphql: []
+  rest: []
+  binding: none
+  confidence: low
+- tool: get_checkout
+  category: checkout
+  graphql: []
+  rest: []
+  binding: none
+  confidence: low
+- tool: update_checkout
+  category: checkout
+  graphql: [cartDeliveryAddressesUpdate, cartSelectedDeliveryOptionsUpdate, cartBuyerIdentityUpdate]
+  rest: []
+  binding: graphql
+  confidence: low
+  note: >-
+    Setting shipping address and delivery method has cart-level GraphQL analogues, but
+    UCP checkout is a distinct server-side object.
+- tool: complete_checkout
+  category: checkout
+  graphql: [cartPrepareForCompletion, cartSubmitForCompletion]
+  rest: []
+  binding: graphql
+  confidence: low
+  note: >-
+    Semantically adjacent — both finalize a purchase — but the GraphQL cart-completion
+    mutations and the UCP checkout completion are separate flows. quip's published agent
+    rules require contemporaneous human approval on this path regardless of surface.
+- tool: cancel_checkout
+  category: checkout
+  graphql: []
+  rest: []
+  binding: none
+  confidence: low
+- tool: get_order
+  category: order
+  graphql: [customer]
+  rest: []
+  binding: graphql
+  confidence: low
+  note: >-
+    QueryRoot has no top-level order field. Orders are reachable in GraphQL only via
+    customer.orders behind a customer access token; the MCP tool resolves an order by id
+    directly.
+mcp_only:
+- tool: create_checkout
+  reason: >-
+    The 2026-07 Storefront GraphQL schema publishes no checkout* mutations at all; UCP
+    models checkout as a first-class server-side object with no public GraphQL equivalent.
+- tool: get_checkout
+  reason: Same — no checkout query field exists in the published schema.
+- tool: cancel_checkout
+  reason: Same — no checkout cancellation surface in GraphQL.
+graphql_only:
+- fields: [article, articles, blog, blogByHandle, blogs, page, pageByHandle, pages, menu,
+    metaobject, metaobjects, shop, localization, locations, urlRedirects, sitemap,
+    publicApiVersions, productTags, productTypes, productRecommendations, collection,
+    collectionByHandle, collections, paymentSettings, cartCompletionAttempt, node]
+  reason: >-
+    Content, merchandising, store-metadata, recommendation and generic node-resolution
+    surfaces with no UCP shopping tool.
+- fields: [customer, customerCreate, customerUpdate, customerRecover, customerReset,
+    customerResetByUrl, customerActivate, customerActivateByUrl, customerAccessTokenCreate,
+    customerAccessTokenCreateWithMultipass, customerAccessTokenRenew, customerAccessTokenDelete,
+    customerAddressCreate, customerAddressUpdate, customerAddressDelete, customerDefaultAddressUpdate]
+  reason: >-
+    Customer identity and account management — deliberately outside the anonymous agent
+    commerce surface.
+- fields: [shopPayPaymentRequestSessionCreate, shopPayPaymentRequestSessionSubmit,
+    cartPaymentUpdate, cartGiftCardCodesAdd, cartGiftCardCodesRemove, cartGiftCardCodesUpdate,
+    cartClone, cartMetafieldsSet, cartMetafieldDelete, cartDeliveryAddressesRemove,
+    cartBillingAddressUpdate]
+  reason: Payment-session and cart-extension fields not projected into the UCP tool set.
+rest_only: []
+rest_only_note: >-
+  No OpenAPI exists to enumerate REST operations. The documented storefront JSON endpoints
+  are all covered by the catalog tools and are listed inline in surfaces.json above.
+coverage:
+  tools_named: 13
+  tools_bound: 10
+  tools_bound_high_confidence: 3
+  mcp_only: 3
+  graphql_root_fields_total: 75
+  graphql_fields_with_a_tool: 23
+  graphql_only: 52
+  deprecated_graphql_fields: 52

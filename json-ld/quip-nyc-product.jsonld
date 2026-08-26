@@ -1,0 +1,29 @@
+{
+  "@context": "http://schema.org/",
+  "@type": "Product",
+  "@id": "https://www.getquip.com/products/green-refresh-bag",
+  "name": "Refresh Bag",
+  "url": "https://www.getquip.com/products/green-refresh-bag",
+  "description": "Bring good oral care habits everywhere you go, in style.\nWhat you get:\u00a0Our modern take on the toiletry kit. Flexible silicone expands to easily pack (collapses flat). Storage straps + mesh pockets to stay organized. Space-saving hook.\nColors with strikethrough pricing are clearance items.\nThe Refresh Bag does not have a warranty.\n",
+  "sku": "920-00208",
+  "gtin12": null,
+  "brand": {
+    "@type": "Thing",
+    "name": "quip"
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "sku": "920-00208",
+      "availability": "http://schema.org/InStock",
+      "price": 20.0,
+      "priceCurrency": "USD",
+      "url": "https://www.getquip.com/products/green-refresh-bag?variant=41137930305610"
+    }
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.6",
+    "reviewCount": "68"
+  }
+}

@@ -1,0 +1,154 @@
+generated: '2026-08-26'
+method: searched
+source: https://www.getquip.com/api/ucp/mcp
+status: published
+deployment:
+  mode: remote
+  endpoint: https://www.getquip.com/api/ucp/mcp
+  auth: none
+  verified: probed
+  probe: live
+  tools: 13
+  checked: '2026-08-26'
+server:
+  name: universal-commerce
+  version: 0.1.0
+  transport: http
+  url: https://www.getquip.com/api/ucp/mcp
+  alternate_url: https://bb73c3-5.myshopify.com/api/ucp/mcp
+  protocol: MCP over JSON-RPC 2.0
+  protocol_version: '2025-06-18'
+  authentication: none
+  server_capabilities:
+    tools: {listChanged: true}
+    prompts: {listChanged: true}
+    resources: {listChanged: true}
+    logging: {}
+  discovery:
+  - https://www.getquip.com/.well-known/ucp
+  - https://www.getquip.com/agents.md
+  - https://www.getquip.com/llms.txt
+implements:
+  protocol: Universal Commerce Protocol (UCP)
+  service: dev.ucp.shopping
+  version: '2026-04-08'
+  supported_versions:
+  - '2026-04-08'
+  - '2026-01-23'
+  spec: https://ucp.dev/2026-04-08/specification/overview/
+  schema: https://ucp.dev/2026-04-08/services/shopping/mcp.openrpc.json
+  capabilities:
+  - dev.ucp.shopping.cart
+  - dev.ucp.shopping.checkout
+  - dev.ucp.shopping.fulfillment
+  - dev.ucp.shopping.discount
+  - dev.ucp.shopping.order
+  - dev.ucp.shopping.catalog.search
+  - dev.ucp.shopping.catalog.lookup
+  - dev.shopify.catalog
+  payment_handlers:
+  - com.google.pay
+  - dev.shopify.card
+  - dev.shopify.shop_pay
+  platform: Shopify
+  ownership_note: >-
+    The tool contract is defined by the UCP shopping service and implemented by Shopify,
+    not authored by quip. What belongs to quip is the deployment: the endpoint, the merchant
+    profile, the catalog it answers with, and the published agent policy are all served from
+    quip's own host, www.getquip.com, and the profile names quip's shop id 57677807690.
+tools_manifest:
+  file: quip-nyc-tools-list.json
+  method: probed
+  source: 'POST https://www.getquip.com/api/ucp/mcp {"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+  http_status: 200
+  note: >-
+    Saved verbatim. Every tool carries a full JSON Schema inputSchema (draft 2020-12) —
+    anonymous introspection is open, so no auth-gated fallback was needed.
+tools:
+- name: search_catalog
+  category: catalog
+  description: >-
+    Search products from the online store using natural-language queries, filter criteria,
+    or both. At least one of query or filters is required. Paginated via pagination.cursor.
+    Response conforms to dev.ucp.shopping.catalog.search.
+  required: [meta, catalog]
+- name: lookup_catalog
+  category: catalog
+  description: Look up products or variants by identifier. Conforms to dev.ucp.shopping.catalog.lookup.
+  required: [meta, catalog]
+- name: get_product
+  category: catalog
+  description: Retrieve complete product detail by identifier.
+  required: [meta, catalog]
+- name: create_cart
+  category: cart
+  description: Creates a new cart and returns a server-assigned cart id.
+  required: [meta, cart]
+- name: get_cart
+  category: cart
+  description: Get the cart contents, line items and totals.
+  required: [meta, id]
+- name: update_cart
+  category: cart
+  description: Perform updates to a cart.
+  required: [meta, cart, id]
+- name: cancel_cart
+  category: cart
+  description: Cancels a cart.
+  required: [meta, id]
+  reversal_of: create_cart
+- name: create_checkout
+  category: checkout
+  description: Creates a checkout. Returns line items, totals, discounts and taxes.
+  required: [meta, checkout]
+- name: get_checkout
+  category: checkout
+  description: Returns checkout details including line items, totals, discounts and taxes.
+  required: [meta, id]
+- name: update_checkout
+  category: checkout
+  description: Updates a checkout — used to set the shipping address and delivery method.
+  required: [meta, checkout, id]
+- name: complete_checkout
+  category: checkout
+  description: >-
+    Completes a checkout and returns the result, including order ID and Thank You Page URL.
+    quip's published agent rules require explicit contemporaneous human buyer approval of payment.
+  required: [meta, id, checkout]
+  human_approval_required: true
+- name: cancel_checkout
+  category: checkout
+  description: Cancels a checkout.
+  required: [meta, id]
+  reversal_of: create_checkout
+- name: get_order
+  category: order
+  description: Get the details of an order.
+  required: [meta, id]
+coverage:
+  tools_total: 13
+  with_input_schema: 13
+  categories:
+    catalog: 3
+    cart: 4
+    checkout: 5
+    order: 1
+  write_tools: 8
+  read_tools: 5
+  reversal_tools: 2
+agent_identity:
+  mechanism: UCP agent profile
+  location: meta.ucp-agent.profile — a required object on all thirteen tool input schemas
+  enforced: true
+  observed: >-
+    A tools/call without meta.ucp-agent.profile returns HTTP 422 with JSON-RPC error
+    -32001 "UCP discovery failed" / data.code invalid_profile_url. The store requires
+    an agent to identify itself with a resolvable profile URI before any catalog, cart
+    or checkout call succeeds.
+x-evidence:
+  fetched: '2026-08-26'
+  probes:
+  - {url: 'https://www.getquip.com/api/ucp/mcp', method: 'POST tools/list', http_status: 200, content_type: 'application/json'}
+  - {url: 'https://www.getquip.com/api/ucp/mcp', method: 'POST initialize', http_status: 200}
+  - {url: 'https://www.getquip.com/api/ucp/mcp', method: 'POST prompts/list', http_status: 422, note: 'gated behind agent profile'}
+  - {url: 'https://www.getquip.com/api/ucp/mcp', method: 'POST resources/list', http_status: 422, note: 'gated behind agent profile'}

@@ -1,0 +1,33 @@
+generated: '2026-08-26'
+method: generated
+source:
+- mcp/quip-nyc-tools-list.json
+- https://www.getquip.com/agents.md
+note: >-
+  Every operation named below was verified verbatim in the live tools/list response saved at
+  mcp/quip-nyc-tools-list.json. quip publishes no OpenAPI, so these skills are grounded in MCP
+  tool names and their JSON Schema input contracts rather than in operationIds. No
+  provider-published skill file was found on the host; the store instead points agents at the
+  platform-wide Shop skill at https://shop.app/SKILL.md.
+skills:
+- file: quip-nyc-browse-catalog.md
+  name: Browse the quip catalog
+  api: mcp/quip-nyc-mcp.yml
+  operations: [search_catalog, lookup_catalog, get_product]
+  consequence: read
+- file: quip-nyc-build-cart.md
+  name: Build and maintain a quip cart
+  api: mcp/quip-nyc-mcp.yml
+  operations: [create_cart, get_cart, update_cart, cancel_cart, get_product]
+  consequence: write
+- file: quip-nyc-checkout-with-buyer-approval.md
+  name: Complete a quip checkout with buyer approval
+  api: mcp/quip-nyc-mcp.yml
+  operations: [create_checkout, get_checkout, update_checkout, complete_checkout, cancel_checkout,
+    get_order]
+  consequence: financial
+  human_in_the_loop: required
+coverage:
+  skills: 3
+  tools_covered: 13
+  tools_total: 13

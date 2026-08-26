@@ -1,0 +1,31 @@
+generated: '2026-08-26'
+method: searched
+source: https://www.getquip.com/agents.md
+plan_count: 0
+note: >-
+  quip sells oral care products, not API access. There is no developer plan, no API tier, no
+  metered API pricing and no paid API key of any kind — the UCP/MCP commerce endpoint, the
+  Storefront GraphQL surface and the storefront JSON endpoints are all anonymous and free to
+  call. The prices on quip's site are retail product prices for toothbrushes, refill plans and
+  quip+ membership, which are catalog data the API returns, not the cost of using the API. An
+  honest zero: no plans artifact exists to record because the provider publishes none.
+plans: []
+product_pricing:
+  is_api_pricing: false
+  note: >-
+    quip's consumer subscription (refill plans, quip+) is a product commerce model. It is
+    surfaced through the API as catalog and checkout data, not as an API entitlement, so it
+    is deliberately NOT recorded as a plan here.
+  catalog_price_format: >-
+    Integer minor units with an ISO 4217 currency code, per every MCP tool description —
+    {"amount": 600, "currency": "USD"} is $6.00.
+  catalog_endpoints:
+  - https://www.getquip.com/products.json
+  - https://www.getquip.com/collections/all/products.json
+x-evidence:
+- url: https://www.getquip.com/agents.md
+  status: 200
+  note: agent documentation names no API plan, key, quota or price
+- url: https://www.getquip.com/api/ucp/mcp
+  status: 200
+  note: anonymous tools/list succeeded with no credential or entitlement
