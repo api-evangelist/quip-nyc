@@ -13,6 +13,17 @@ description: >-
   openly introspectable Storefront GraphQL API, and a documented unauthenticated product
   JSON surface. The company's published agent policy requires contemporaneous human approval
   before any agent completes a payment.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://www.getquip.com/cdn/shop/files/Screenshot_2025-04-16_at_6.12.36_PM.png?v=1744899824
 url: https://raw.githubusercontent.com/api-evangelist/quip-nyc/refs/heads/main/apis.yml
 x-type: company
