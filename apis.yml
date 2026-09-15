@@ -1,18 +1,15 @@
 aid: quip-nyc
 name: Quip NYC
-description: >-
-  quip NYC Inc. is a Brooklyn, New York oral care company founded in 2015 by Simon Enever and
-  Bill May, selling dentist-designed electric toothbrushes, water flossers, refillable floss,
-  toothpaste, mouthwash and whitening products direct to consumers on a recurring refill
-  subscription. It has raised roughly $272M across its rounds and serves millions of
-  subscribers. quip publishes no developer portal, API reference, OpenAPI specification or
-  SDK of its own. Its entire machine-readable surface is its storefront: a Shopify-hosted
-  commerce platform that serves agent-facing instructions at /agents.md and /llms.txt, a
-  Universal Commerce Protocol merchant profile at /.well-known/ucp, an anonymous Model
-  Context Protocol endpoint exposing thirteen catalog, cart, checkout and order tools, an
-  openly introspectable Storefront GraphQL API, and a documented unauthenticated product
-  JSON surface. The company's published agent policy requires contemporaneous human approval
-  before any agent completes a payment.
+description: 'quip NYC Inc. is a Brooklyn, New York oral care company founded in 2015 by Simon Enever
+  and Bill May, selling dentist-designed electric toothbrushes, water flossers, refillable floss, toothpaste,
+  mouthwash and whitening products direct to consumers on a recurring refill subscription. It has raised
+  roughly $272M across its rounds and serves millions of subscribers. quip publishes no developer portal,
+  API reference, OpenAPI specification or SDK of its own. Its entire machine-readable surface is its storefront:
+  a Shopify-hosted commerce platform that serves agent-facing instructions at /agents.md and /llms.txt,
+  a Universal Commerce Protocol merchant profile at /.well-known/ucp, an anonymous Model Context Protocol
+  endpoint exposing thirteen catalog, cart, checkout and order tools, an openly introspectable Storefront
+  GraphQL API, and a documented unauthenticated product JSON surface. The company''s published agent policy
+  requires contemporaneous human approval before any agent completes a payment.'
 deliveryModel:
   model: saas
   open_source: false
@@ -68,16 +65,14 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 apis:
-- aid: quip-nyc-ucp-commerce-mcp
+- aid: quip-nyc:quip-nyc-ucp-commerce-mcp
   name: quip UCP Commerce MCP API
-  description: >-
-    An anonymous Model Context Protocol endpoint implementing the Universal Commerce Protocol
-    (UCP) shopping service for the quip online store. Exposes thirteen tools covering catalog
-    search and lookup, product detail, cart lifecycle, checkout lifecycle and order retrieval,
-    each carrying a full JSON Schema 2020-12 input contract. tools/list and initialize are
-    anonymous; every tools/call requires a resolvable UCP agent profile URI. Checkout
-    completion requires contemporaneous human buyer approval per the store's published agent
-    rules, and no API-level reversal of a completed checkout exists.
+  description: An anonymous Model Context Protocol endpoint implementing the Universal Commerce Protocol
+    (UCP) shopping service for the quip online store. Exposes thirteen tools covering catalog search and
+    lookup, product detail, cart lifecycle, checkout lifecycle and order retrieval, each carrying a full
+    JSON Schema 2020-12 input contract. tools/list and initialize are anonymous; every tools/call requires
+    a resolvable UCP agent profile URI. Checkout completion requires contemporaneous human buyer approval
+    per the store's published agent rules, and no API-level reversal of a completed checkout exists.
   humanURL: https://www.getquip.com/agents.md
   baseURL: https://www.getquip.com/api/ucp/mcp
   tags:
@@ -91,14 +86,13 @@ apis:
     url: mcp/quip-nyc-mcp.yml
   - type: ToolCrosswalk
     url: mcp/quip-nyc-tool-crosswalk.yml
-- aid: quip-nyc-storefront-graphql
+- aid: quip-nyc:quip-nyc-storefront-graphql
   name: quip Storefront GraphQL API
-  description: >-
-    The Shopify Storefront GraphQL API as deployed on the quip domain, version 2026-07. Schema
-    introspection is open to anonymous callers and returns 415 types, 34 query root fields and
-    41 mutations covering products, variants, collections, selling plans, blogs, pages, search,
-    cart and customer accounts. Responses carry an extensions.cost query-cost object. Fifty-two
-    fields are marked @deprecated in the schema.
+  description: The Shopify Storefront GraphQL API as deployed on the quip domain, version 2026-07. Schema
+    introspection is open to anonymous callers and returns 415 types, 34 query root fields and 41 mutations
+    covering products, variants, collections, selling plans, blogs, pages, search, cart and customer accounts.
+    Responses carry an extensions.cost query-cost object. Fifty-two fields are marked @deprecated in the
+    schema.
   humanURL: https://shopify.dev/docs/api/storefront
   baseURL: https://www.getquip.com/api/2026-07/graphql.json
   tags:
@@ -109,13 +103,11 @@ apis:
   properties:
   - type: GraphQL
     url: graphql/quip-nyc-storefront.graphql
-- aid: quip-nyc-storefront-json
+- aid: quip-nyc:quip-nyc-storefront-json
   name: quip Storefront JSON Endpoints
-  description: >-
-    The read-only JSON surface the store documents for agents that only need to browse catalog
-    data without transacting — product JSON by handle, collection product listings, product
-    search and the sitemap. No authentication is required; verified live at
-    /products.json and /collections/all/products.json.
+  description: The read-only JSON surface the store documents for agents that only need to browse catalog
+    data without transacting — product JSON by handle, collection product listings, product search and
+    the sitemap. No authentication is required; verified live at /products.json and /collections/all/products.json.
   humanURL: https://www.getquip.com/agents.md
   baseURL: https://www.getquip.com/
   tags:
