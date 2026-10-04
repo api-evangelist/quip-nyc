@@ -86,6 +86,9 @@ apis:
     url: mcp/quip-nyc-mcp.yml
   - type: ToolCrosswalk
     url: mcp/quip-nyc-tool-crosswalk.yml
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: ucp
 - aid: quip-nyc:quip-nyc-storefront-graphql
   name: quip Storefront GraphQL API
   description: The Shopify Storefront GraphQL API as deployed on the quip domain, version 2026-07. Schema
@@ -103,13 +106,15 @@ apis:
   properties:
   - type: GraphQL
     url: graphql/quip-nyc-storefront.graphql
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: storefront-graphql
 - aid: quip-nyc:quip-nyc-storefront-json
   name: quip Storefront JSON Endpoints
   description: The read-only JSON surface the store documents for agents that only need to browse catalog
     data without transacting — product JSON by handle, collection product listings, product search and
     the sitemap. No authentication is required; verified live at /products.json and /collections/all/products.json.
   humanURL: https://www.getquip.com/agents.md
-  baseURL: https://www.getquip.com/
   tags:
   - JSON
   - Catalog
@@ -117,6 +122,9 @@ apis:
   properties:
   - type: JSONLD
     url: json-ld/quip-nyc-product.jsonld
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: storefront-json
 common:
 - type: DomainSecurity
   url: security/quip-nyc-domain-security.yml
