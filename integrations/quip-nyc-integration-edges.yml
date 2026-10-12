@@ -1,0 +1,16 @@
+generated: '2026-10-12'
+method: none
+source:
+- https://zapier.com/apps/quip-nyc/integrations
+- https://n8n.io/integrations/quip-nyc/
+- https://composio.dev/toolkits/quip-nyc
+- https://monid.ai/tools/quip-nyc
+checked:
+- https://composio.dev/toolkits/quip-nyc
+- https://monid.ai/tools/quip-nyc
+- https://n8n.io/integrations/quip-nyc/
+- https://zapier.com/apps/quip-nyc/integrations
+summary: null
+marketplace_apps: []
+edges: []
+templates: []
