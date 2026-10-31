@@ -64,36 +64,129 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-quip NYC Inc. is a Brooklyn, New York oral care company founded in 2015 by Simon Enever and Bill
-May, selling dentist-designed electric toothbrushes, water flossers, refillable floss, toothpaste,
-mouthwash and whitening products direct to consumers on a recurring refill subscription.
+quip NYC Inc. is a Brooklyn, New York oral care company founded in 2015 by Simon Enever and Bill May, selling dentist-designed electric toothbrushes, water flossers, refillable floss, toothpaste, mouthwash and whitening products direct to consumers on a recurring refill subscription. It has raised roughly $272M across its rounds and serves millions of subscribers. quip publishes no developer portal, API reference, OpenAPI specification or SDK of its own. Its entire machine-readable surface is its storefront: a Shopify-hosted commerce platform that serves agent-facing instructions at /agents.md and /llms.txt, a Universal Commerce Protocol merchant profile at /.well-known/ucp, an anonymous Model Context Protocol endpoint exposing thirteen catalog, cart, checkout and order tools, an openly introspectable Storefront GraphQL API, and a documented unauthenticated product JSON surface. The company's published agent policy requires contemporaneous human approval before any agent completes a payment.
 
-**quip publishes no developer portal, API reference, OpenAPI specification or SDK of its own.** Its
-entire machine-readable surface is its storefront, and that surface is real and callable today:
+**Areas:** Company · Oral Care · Consumer Health · Personal Care · Retail · E-Commerce · Direct to Consumer · Subscription · Agentic Commerce · Shopify
 
-- **UCP Commerce MCP API** — `https://www.getquip.com/api/ucp/mcp`. An anonymous Model Context
-  Protocol endpoint implementing the Universal Commerce Protocol shopping service, with **13 tools**
-  (catalog search/lookup, product detail, cart lifecycle, checkout lifecycle, order retrieval), each
-  carrying a full JSON Schema 2020-12 input contract. `tools/list` and `initialize` are anonymous;
-  every `tools/call` requires a resolvable UCP agent profile URI.
-- **Storefront GraphQL API** — `https://www.getquip.com/api/2026-07/graphql.json`. Open anonymous
-  introspection: 415 types, 34 query root fields, 41 mutations.
-- **Storefront JSON endpoints** — documented, unauthenticated product and collection JSON.
-- **Agent documentation** — `/agents.md` (canonical) mirrored at `/llms.txt`, a UCP merchant profile
-  at `/.well-known/ucp`, and OIDC / RFC 8414 / RFC 9728 metadata under `/.well-known/`.
+## Quip NYC on APIs.io
 
-quip's published agent policy requires **contemporaneous human approval** before any agent completes
-a payment, and there is **no API-level reversal of a completed checkout** — no refund, void or
-order-cancel tool exists. Reversal is a human channel only, within the 30-day window on quip's
-returns policy.
+Everything profiled for Quip NYC is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/quip-nyc/](https://apis.io/providers/quip-nyc/)** — or go straight to one of the APIs or properties below.
 
-### Namesake warning
+### APIs (3)
 
-Searching for "Quip API" returns `quip.com/api/reference`, the **Quip Automation API**. That is
-Salesforce's Quip document-collaboration product — a **different company**. Nothing from `quip.com`
-belongs in this repository.
+- [quip UCP Commerce MCP API](https://apis.io/apis/quip-nyc/quip-nyc-ucp-commerce-mcp/) — An anonymous Model Context Protocol endpoint implementing the Universal Commerce Protocol (UCP) shopping service for the quip online store. Exposes thirteen…
+- [quip Storefront GraphQL API](https://apis.io/apis/quip-nyc/quip-nyc-storefront-graphql/) — The Shopify Storefront GraphQL API as deployed on the quip domain, version 2026-07. Schema introspection is open to anonymous callers and returns 415 types,…
+- [quip Storefront JSON Endpoints](https://apis.io/apis/quip-nyc/quip-nyc-storefront-json/) — The read-only JSON surface the store documents for agents that only need to browse catalog data without transacting — product JSON by handle, collection…
 
-- https://www.getquip.com/
-- https://www.getquip.com/agents.md
-- https://github.com/getquip
-- https://www.hiive.com/securities/quip-nyc-stock (harvest source)
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [universal-commerce](https://apis.io/servers/quip-nyc/universal-commerce/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Quip Nyc Agentic Access](https://apis.io/agentic-access/quip-nyc/quip-nyc-agentic-access/)
+
+#### JSON-LD (1)
+
+Linked-data contexts for the provider's vocabulary.
+
+- [Quip Nyc Product Context](https://apis.io/jsonld/quip-nyc/quip-nyc-product/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Quip Nyc Authentication](https://apis.io/security/quip-nyc/quip-nyc-authentication/)
+- [Quip Nyc Domain Security](https://apis.io/security/quip-nyc/quip-nyc-domain-security/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [Quip Nyc Scopes](https://apis.io/scopes/quip-nyc/quip-nyc-scopes/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Quip Nyc Plans Pricing](https://apis.io/plans/quip-nyc/quip-nyc-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Quip Nyc Rate Limits](https://apis.io/rate-limits/quip-nyc/quip-nyc-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.getquip.com/)
+- [Documentation](https://www.getquip.com/agents.md)
+- [Sign up](https://www.getquip.com/account/login)
+- [Support](https://www.getquip.com/pages/contact)
+- [Blog](https://www.getquip.com/blogs/mouthoff-blog)
+- [Terms of service](https://www.getquip.com/policies/terms-of-service)
+- [Privacy policy](https://www.getquip.com/policies/privacy-policy)
+- [GitHub](https://github.com/getquip)
+
+## API Evangelist rating
+
+**Kin Score 29.6** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 71.7 |
+| Contract quality | 15.7 |
+| Contract governance | 18.2 |
+| Operational transparency | 2.6 |
+| Developer ergonomics | 30.4 |
+| Access clarity | 34.2 |
+
+**Agent readiness 43.9** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | yes |
+| Reversibility Documented | — |
+| MCP Server | platform (partial credit) |
+| Auth Clarity | served (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | — |
+| Agentic Commerce | platform (partial credit) |
+
+**Regulatory alignment 32.8** — Health
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/quip-nyc/](https://apis.io/providers/quip-nyc/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Quip NYC: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/quip-nyc/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
